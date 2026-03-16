@@ -1,0 +1,47 @@
+package com.eventhub.controllers;
+
+import com.eventhub.dto.UserRoleRequest;
+import com.eventhub.services.UserService;
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public class UserController {
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping
+    public List<Map<String, Object>> getUsers() {
+        return userService.getUsers();
+    }
+
+    @PutMapping("/{id}/role")
+    public Map<String, Object> assignRole(@PathVariable Long id, @Valid @RequestBody UserRoleRequest request) {
+        return userService.assignRole(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public Map<String, Object> deactivateUser(@PathVariable Long id) {
+        return userService.deactivateUser(id);
+    }
+
+    @PatchMapping("/{id}/activate")
+    public Map<String, Object> reactivateUser(@PathVariable Long id) {
+        return userService.reactivateUser(id);
+    }
+}
